@@ -19,34 +19,40 @@ class _PhotosCardViewState extends State<PhotosCardView> {
   }
 
   void _showDetailsDialog(BuildContext context, String url, String title) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Image.network(
-            url,
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: 200,
-            errorBuilder: (context, error, stackTrace) {
-              return const Center(
-                child: Text(
-                  'Failed to load image',
-                  style: TextStyle(color: Colors.red),
-                ),
-              );
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Close'),
+    try {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(title),
+            content: Image.network(
+              url,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: 200,
+              errorBuilder: (context, error, stackTrace) {
+                return const Center(
+                  child: Text(
+                    'Failed to load image',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                );
+              },
             ),
-          ],
-        );
-      },
-    );
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error displaying details: $e')),
+      );
+    }
   }
 
   @override
@@ -69,37 +75,60 @@ class _PhotosCardViewState extends State<PhotosCardView> {
             return ListView.builder(
               itemCount: posts.length,
               itemBuilder: (context, index) {
-                final post = posts[index];
-                final Photoview = PhotosView.fromJson(post);
-                final thumbnailUrl = Photoview.thumbnailUrl ?? '';
-                final url = Photoview.url ?? '';
-                final title = Photoview.title ?? 'No Title';
-                final id = Photoview.id;
-                return Card(
-                  child: ExpansionTile(
-                    title: Text(title),
-                    subtitle: Image.network(
-                      thumbnailUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(
-                          Icons.broken_image,
-                          size: 50,
-                          color: Colors.grey,
-                        );
-                      },
-                    ),
-                    onExpansionChanged: (isExpanded) {
-                      if (isExpanded) {}
-                    },
-                    children: [
-                      TextButton(
-                        onPressed: () => _showDetailsDialog(context, url, title),
-                        child: const Text('View Details'),
+                try {
+                  final post = posts[index];
+                  final photoview = PhotosView.fromJson(post);
+                  final thumbnailUrl = photoview.thumbnailUrl ?? '';
+                  final url = photoview.url ?? '';
+                  final title = photoview.title ?? 'No Title';
+
+                  return Card(
+                    child: ExpansionTile(
+                      title: Text(title),
+                      subtitle: Image.network(
+                        thumbnailUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(
+                            Icons.broken_image,
+                            size: 50,
+                            color: Colors.grey,
+                          );
+                        },
                       ),
-                    ],
-                  ),
-                );
+                      onExpansionChanged: (isExpanded) {
+                        try {
+                          if (isExpanded) {
+                            
+                          }
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error expanding card: $e')),
+                          );
+                        }
+                      },
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            try {
+                              _showDetailsDialog(context, url, title);
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Error opening dialog: $e')),
+                              );
+                            }
+                          },
+                          child: const Text('View Details'),
+                        ),
+                      ],
+                    ),
+                  );
+                } catch (e) {
+                  return ListTile(
+                    title: const Text('Error loading post'),
+                    subtitle: Text(e.toString()),
+                  );
+                }
               },
             );
           }
