@@ -10,7 +10,6 @@ void main() {
     home: HomePage(),
   ));
 }
-
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
