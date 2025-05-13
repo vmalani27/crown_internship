@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'model.dart'; // Make sure this path is correct for your User model
+import 'package:training_app/model/model.dart'; // Make sure this path is correct for your User model
 
 class UserCard extends StatelessWidget {
   final User user;
