@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'home_page.dart';
 import 'package:training_app/api_helper/login_helper.dart';
+import 'package:training_app/tab_view.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -30,7 +30,7 @@ class LoginPage extends StatelessWidget {
         // Navigate to the HomePage if login is successful
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          MaterialPageRoute(builder: (context) => const TabView()),
         );
       } else {
         // Show error message if login fails
