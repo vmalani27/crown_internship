@@ -16,7 +16,9 @@ class LoginPage extends StatelessWidget {
 
       if (username.isEmpty || password.isEmpty) {
         ScaffoldMessenger.of(scaffoldContext).showSnackBar(
-          const SnackBar(content: Text('Username and Password cannot be empty')),
+          const SnackBar(
+            content: Text('Username and Password cannot be empty'),
+          ),
         );
         return;
       }
@@ -28,7 +30,7 @@ class LoginPage extends StatelessWidget {
         // Navigate to the HomePage if login is successful
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const Trial1()),
+          MaterialPageRoute(builder: (context) => const HomePage()),
         );
       } else {
         // Show error message if login fails
@@ -39,9 +41,7 @@ class LoginPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login Page'),
-      ),
+      appBar: AppBar(title: const Text('Login Page')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

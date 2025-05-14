@@ -1,6 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../model/model.dart';
+import '../models/model.dart';
 
 final apiUrl = "https://glexas.com/hostel_data/API/test/new_admission_crud.php";
 
@@ -22,14 +22,15 @@ Future<List<User>> fetchUsers() async {
 Future<void> addUser(User user) async {
   final uri = Uri.parse(apiUrl);
 
-  final payload = http.MultipartRequest('POST', uri)
-    ..fields['user_code'] = user.userCode
-    ..fields['first_name'] = user.firstName
-    ..fields['middle_name'] = user.middleName
-    ..fields['last_name'] = user.lastName
-    ..fields['phone_number'] = user.phoneNumber
-    ..fields['phone_country_code'] = user.phoneCountryCode
-    ..fields['email'] = user.emailId;
+  final payload =
+      http.MultipartRequest('POST', uri)
+        ..fields['user_code'] = user.userCode
+        ..fields['first_name'] = user.firstName
+        ..fields['middle_name'] = user.middleName
+        ..fields['last_name'] = user.lastName
+        ..fields['phone_number'] = user.phoneNumber
+        ..fields['phone_country_code'] = user.phoneCountryCode
+        ..fields['email'] = user.emailId;
 
   try {
     final streamedResponse = await payload.send();
@@ -37,7 +38,9 @@ Future<void> addUser(User user) async {
 
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
-      if (jsonData is Map<String, dynamic> && jsonData.containsKey('status') && jsonData['status'] == true) {
+      if (jsonData is Map<String, dynamic> &&
+          jsonData.containsKey('status') &&
+          jsonData['status'] == true) {
         return;
       } else {
         throw Exception('Unexpected API response format');
@@ -56,7 +59,9 @@ Future<void> deleteUser(String registrationMainID) async {
   request.headers.addAll({'Content-Type': 'application/json'});
   request.body = jsonEncode({'registration_main_id': registrationMainID});
 
-  final response = await http.Client().send(request).then(http.Response.fromStream);
+  final response = await http.Client()
+      .send(request)
+      .then(http.Response.fromStream);
 
   if (response.statusCode == 200) {
     final jsonData = jsonDecode(response.body);
@@ -73,17 +78,20 @@ Future<void> deleteUser(String registrationMainID) async {
 Future<void> updateUser(User user) async {
   final uri = Uri.parse(apiUrl);
 
-  final payload = http.MultipartRequest('POST', uri)
-    ..fields['registration_main_id'] = user.registrationMainID
-    ..fields['user_code'] = user.userCode
-    ..fields['first_name'] = user.firstName
-    ..fields['middle_name'] = user.middleName
-    ..fields['last_name'] = user.lastName
-    ..fields['phone_number'] = user.phoneNumber
-    ..fields['phone_country_code'] = user.phoneCountryCode
-    ..fields['email'] = user.emailId;
+  // Create a JSON payload using the User's toJson method
+  final payload = {
+    'registration_main_id': user.registrationMainID,
+    'user_code': user.userCode,
+    'first_name': user.firstName,
+    'middle_name': user.middleName,
+    'last_name': user.lastName,
+    'phone_number': user.phoneNumber,
+    'phone_country_code': user.phoneCountryCode,
+    'email': user.emailId,
+  };
 
   try {
+    // Send a PUT request with raw JSON data
     final response = await http.put(
       uri,
       headers: {'Content-Type': 'application/json'},
@@ -92,8 +100,10 @@ Future<void> updateUser(User user) async {
 
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
-      if (jsonData is Map<String, dynamic> && jsonData.containsKey('status') && jsonData['status'] == true) {
-        return;
+      if (jsonData is Map<String, dynamic> &&
+          jsonData.containsKey('status') &&
+          jsonData['status'] == true) {
+        return; // Successfully updated
       } else {
         throw Exception('Unexpected API response format');
       }

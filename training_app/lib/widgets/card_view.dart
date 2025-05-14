@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:training_app/model/model.dart'; // Make sure this path is correct for your User model
+import 'package:training_app/models/model.dart'; // Make sure this path is correct for your User model
 
 class UserCard extends StatelessWidget {
   final User user;
 
-  const UserCard({
-    super.key,
-    required this.user,
-  });
+  const UserCard({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
-    final fullName = '${user.firstName} ${user.lastName}'.trim().isEmpty
-        ? 'No Name'
-        : '${user.firstName} ${user.lastName}';
+    final fullName =
+        '${user.firstName} ${user.lastName}'.trim().isEmpty
+            ? 'No Name'
+            : '${user.firstName} ${user.lastName}';
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -36,10 +34,7 @@ class UserCard extends StatelessWidget {
                 ),
                 Text(
                   user.userCode,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(fontSize: 16, color: Colors.grey),
                 ),
               ],
             ),

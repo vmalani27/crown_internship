@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:training_app/api_helper/api_helper.dart';
-import '../model/model.dart';
+import 'package:training_app/api_helper/user_helper.dart';
+import '../models/model.dart';
 import 'package:training_app/widgets/card_view.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 
-class Trial1 extends StatefulWidget {
-  const Trial1({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  _Trial1State createState() => _Trial1State();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _Trial1State extends State<Trial1> {
+class _HomePageState extends State<HomePage> {
   late Future<List<User>> _usersFuture;
 
   @override
@@ -35,9 +36,9 @@ class _Trial1State extends State<Trial1> {
       );
       _refreshUsers(); // Refresh the user list after deletion
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to delete user: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to delete user: $e')));
     }
   }
 
@@ -46,6 +47,7 @@ class _Trial1State extends State<Trial1> {
     final lastNameController = TextEditingController(text: user.lastName);
     final phoneNumberController = TextEditingController(text: user.phoneNumber);
     final emailController = TextEditingController(text: user.emailId);
+    String phoneCountryCode = '+1'; // Default country code
 
     showDialog(
       context: context,
@@ -63,9 +65,13 @@ class _Trial1State extends State<Trial1> {
                   controller: lastNameController,
                   decoration: const InputDecoration(labelText: 'Last Name'),
                 ),
-                TextField(
+                IntlPhoneField(
                   controller: phoneNumberController,
                   decoration: const InputDecoration(labelText: 'Phone Number'),
+                  initialCountryCode: 'US', // Default country
+                  onChanged: (phone) {
+                    phoneCountryCode = phone.countryCode; // Update country code
+                  },
                 ),
                 TextField(
                   controller: emailController,
@@ -82,16 +88,18 @@ class _Trial1State extends State<Trial1> {
             TextButton(
               onPressed: () async {
                 try {
-                  await updateUser(User(
-                    registrationMainID: user.registrationMainID,
-                    userCode: user.userCode,
-                    firstName: firstNameController.text,
-                    middleName: user.middleName,
-                    lastName: lastNameController.text,
-                    phoneNumber: phoneNumberController.text,
-                    phoneCountryCode: user.phoneCountryCode,
-                    emailId: emailController.text,
-                  ));
+                  await updateUser(
+                    User(
+                      registrationMainID: user.registrationMainID,
+                      userCode: user.userCode,
+                      firstName: firstNameController.text,
+                      middleName: user.middleName,
+                      lastName: lastNameController.text,
+                      phoneNumber: phoneNumberController.text,
+                      phoneCountryCode: phoneCountryCode,
+                      emailId: emailController.text,
+                    ),
+                  );
                   Navigator.of(context).pop(); // Close dialog
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('User updated successfully')),
@@ -121,8 +129,8 @@ class _Trial1State extends State<Trial1> {
           final middleNameController = TextEditingController();
           final lastNameController = TextEditingController();
           final phoneNumberController = TextEditingController();
-          final phoneCountryCodeController = TextEditingController();
           final emailController = TextEditingController();
+          String phoneCountryCode = '+1'; // Default country code
 
           showDialog(
             context: context,
@@ -134,27 +142,38 @@ class _Trial1State extends State<Trial1> {
                     children: [
                       TextField(
                         controller: userCodeController,
-                        decoration: const InputDecoration(labelText: 'User Code'),
+                        decoration: const InputDecoration(
+                          labelText: 'User Code',
+                        ),
                       ),
                       TextField(
                         controller: firstNameController,
-                        decoration: const InputDecoration(labelText: 'First Name'),
+                        decoration: const InputDecoration(
+                          labelText: 'First Name',
+                        ),
                       ),
                       TextField(
                         controller: middleNameController,
-                        decoration: const InputDecoration(labelText: 'Middle Name'),
+                        decoration: const InputDecoration(
+                          labelText: 'Middle Name',
+                        ),
                       ),
                       TextField(
                         controller: lastNameController,
-                        decoration: const InputDecoration(labelText: 'Last Name'),
+                        decoration: const InputDecoration(
+                          labelText: 'Last Name',
+                        ),
                       ),
-                      TextField(
+                      IntlPhoneField(
                         controller: phoneNumberController,
-                        decoration: const InputDecoration(labelText: 'Phone Number'),
-                      ),
-                      TextField(
-                        controller: phoneCountryCodeController,
-                        decoration: const InputDecoration(labelText: 'Phone Country Code'),
+                        decoration: const InputDecoration(
+                          labelText: 'Phone Number',
+                        ),
+                        initialCountryCode: 'US', // Default country
+                        onChanged: (phone) {
+                          phoneCountryCode =
+                              phone.countryCode; // Update country code
+                        },
                       ),
                       TextField(
                         controller: emailController,
@@ -177,7 +196,7 @@ class _Trial1State extends State<Trial1> {
                           middleName: middleNameController.text,
                           lastName: lastNameController.text,
                           phoneNumber: phoneNumberController.text,
-                          phoneCountryCode: phoneCountryCodeController.text,
+                          phoneCountryCode: phoneCountryCode,
                           emailId: emailController.text,
                           registrationMainID: '',
                         );
@@ -186,7 +205,9 @@ class _Trial1State extends State<Trial1> {
 
                         Navigator.of(context).pop();
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('User added successfully')),
+                          const SnackBar(
+                            content: Text('User added successfully'),
+                          ),
                         );
                         _refreshUsers();
                       } catch (e) {
@@ -205,12 +226,9 @@ class _Trial1State extends State<Trial1> {
         child: const Icon(Icons.add),
       ),
       appBar: AppBar(
-        title: const Text('Trial 1'),
+        title: const Text('Home Page'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _refreshUsers,
-          ),
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _refreshUsers),
         ],
       ),
       body: Center(
@@ -252,9 +270,7 @@ class _Trial1State extends State<Trial1> {
                       padding: const EdgeInsets.only(right: 20),
                       child: const Icon(Icons.delete, color: Colors.white),
                     ),
-                    child: UserCard(
-                      user: admission,
-                    ),
+                    child: UserCard(user: admission),
                   );
                 },
               );
